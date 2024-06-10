@@ -1,10 +1,12 @@
 package com.matzuu.batterymonitor.viewmodels
 
+import android.os.BatteryManager
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 //import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 //import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
@@ -23,16 +25,17 @@ sealed interface BatteryLevelsUiState {
 }
 
 class BatteryMonitorViewModel(
-    private val batteryLevelRepository: BatteryLevelRepository
+    private val batteryLevelRepository: BatteryLevelRepository,
+    private val batteryManager: BatteryManager
 ) : ViewModel() {
 
     var batteryLevelsUiState: BatteryLevelsUiState by mutableStateOf(BatteryLevelsUiState.Failure)
         private set
 
-    fun insertBatteryLevel(currentLevel: Int) {
+    fun addBatteryLevel() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                batteryLevelRepository.insertBatteryLevel(currentLevel)
+                batteryLevelRepository.insertBatteryLevel(batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY))
             }
         }
     }
@@ -57,12 +60,12 @@ class BatteryMonitorViewModel(
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
-//                val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as BatteryMonitorApplication)
-                val application = this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as BatteryMonitorApplication
-//                val application = this[APPLICATION_KEY] as BatteryMonitorApplication
+                val application = this[APPLICATION_KEY] as BatteryMonitorApplication
                 val batteryLevelRepository = application.container.batteryLevelRepository
+                val batteryManager = application.container.batteryManager
                 BatteryMonitorViewModel(
-                    batteryLevelRepository = batteryLevelRepository
+                    batteryLevelRepository = batteryLevelRepository,
+                    batteryManager = batteryManager
                 )
             }
         }

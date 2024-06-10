@@ -15,11 +15,13 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.matzuu.batterymonitor.ui.components.BatteryMonitorBottomBar
 import com.matzuu.batterymonitor.ui.screens.BigScreen
+import com.matzuu.batterymonitor.ui.screens.BatteryListScreen
 import com.matzuu.batterymonitor.viewmodels.BatteryMonitorViewModel
 import com.matzuu.batterymonitor.workers.BatteryLevelCollectWorker
 
 enum class CurrentScreen(@StringRes val title: Int) {
-    BatteryLevels(title = R.string.battery_levels)
+    BatteryLevels(title = R.string.battery_levels),
+    ListScreen(title = R.string.list_screen)
 }
 
 @Composable
@@ -30,7 +32,6 @@ fun PrimaryScreen(
 ) {
     val batteryMonitorViewModel: BatteryMonitorViewModel = viewModel(factory = BatteryMonitorViewModel.Factory)
     BatteryLevelCollectWorker.viewmodel = batteryMonitorViewModel
-    BatteryLevelCollectWorker.batteryManager = batteryManager
     batteryMonitorViewModel.scheduleWorker()
     batteryMonitorViewModel.getBatteryLevels()
 
@@ -38,14 +39,18 @@ fun PrimaryScreen(
         bottomBar = {
             BatteryMonitorBottomBar(
                 currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route,
-                onFirstClick = {},
-                onSecondClick = {},
+                navigationStandard = {
+                    navController.navigate(CurrentScreen.BatteryLevels.name)
+                },
+                navigateList = {
+                    navController.navigate(CurrentScreen.ListScreen.name)
+                },
                 modifier = Modifier
             )
         }
     ) { innerPadding ->
         NavHost(
-            navController = rememberNavController(),
+            navController = navController,
             startDestination = CurrentScreen.BatteryLevels.name,
             modifier = modifier
                 .padding(innerPadding)
@@ -53,8 +58,20 @@ fun PrimaryScreen(
         ) {
             composable(route = CurrentScreen.BatteryLevels.name) {
                 BigScreen(
-                    batteryManager = batteryManager,
-                    batteryLevelsUiState = batteryMonitorViewModel.batteryLevelsUiState
+                    batteryLevelsUiState = batteryMonitorViewModel.batteryLevelsUiState,
+                    onClickFunction = {
+                        batteryMonitorViewModel.addBatteryLevel()
+                        batteryMonitorViewModel.getBatteryLevels()
+                    }
+                )
+            }
+            composable(route = CurrentScreen.ListScreen.name) {
+                BatteryListScreen(
+                    batteryLevelsUiState = batteryMonitorViewModel.batteryLevelsUiState,
+                    onClickFunction = {
+                        batteryMonitorViewModel.addBatteryLevel()
+                        batteryMonitorViewModel.getBatteryLevels()
+                    }
                 )
             }
         }

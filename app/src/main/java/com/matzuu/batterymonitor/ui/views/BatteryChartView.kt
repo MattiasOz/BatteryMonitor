@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PointF
+import android.util.Log
 import android.view.View
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -75,7 +76,7 @@ class BatteryChartView(
                 continue
             }
             canvas.drawLine(prevPoint.x, prevPoint.y, x, y, curvePaint)
-
+            Log.d("BatteryChartView", "x: $x, y: $y")
             prevPoint = PointF(x, y)
 
         }

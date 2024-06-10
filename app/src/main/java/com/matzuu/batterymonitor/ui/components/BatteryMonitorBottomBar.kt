@@ -1,5 +1,6 @@
 package com.matzuu.batterymonitor.ui.components
 
+import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Home
@@ -14,18 +15,19 @@ import com.matzuu.batterymonitor.CurrentScreen
 @Composable
 fun BatteryMonitorBottomBar(
     currentRoute: String?,
-    onFirstClick: () -> Unit,
-    onSecondClick: () -> Unit,
+    navigationStandard: () -> Unit,
+    navigateList: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     NavigationBar(
         modifier = modifier
     ) {
+        Log.d("BottomBar", "BatteryMonitorBottomBar: $currentRoute")
         NavigationBarItem(
             selected = currentRoute == CurrentScreen.BatteryLevels.name,
-            onClick = onFirstClick,
+            onClick = navigationStandard,
             label = {
-                Text("First")
+                Text("Standard")
             },
             icon = {
                 Icon(
@@ -35,10 +37,10 @@ fun BatteryMonitorBottomBar(
             }
         )
         NavigationBarItem(
-            selected = false,
-            onClick = onSecondClick,
+            selected = currentRoute == CurrentScreen.ListScreen.name,
+            onClick = navigateList,
             label = {
-                    Text("Second")
+                    Text("List")
             },
             icon = {
                 Icon(

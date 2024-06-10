@@ -1,7 +1,6 @@
 package com.matzuu.batterymonitor.workers
 
 import android.content.Context
-import android.os.BatteryManager
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -15,7 +14,7 @@ class BatteryLevelCollectWorker(
 ) : CoroutineWorker(ctx, params) {
     override suspend fun doWork(): Result {
         try {
-            viewmodel!!.insertBatteryLevel(batteryManager!!.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY))
+            viewmodel!!.addBatteryLevel()
         } catch (e: NullPointerException) {
             Log.e(TAG, "viewmodel or batteryManager is null")
             return Result.failure()
@@ -26,7 +25,6 @@ class BatteryLevelCollectWorker(
 
     companion object {
         var viewmodel: BatteryMonitorViewModel? = null
-        var batteryManager: BatteryManager? = null
     }
 }
 

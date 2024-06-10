@@ -5,6 +5,7 @@ import android.os.BatteryManager
 import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,8 +26,8 @@ private const val TAG = "BigScreen"
 
 @Composable
 fun BigScreen(
-    batteryManager: BatteryManager,
     batteryLevelsUiState: BatteryLevelsUiState,
+    onClickFunction: () -> Unit,
     modifier: Modifier = Modifier
 ){
     Column(
@@ -50,8 +51,8 @@ fun BigScreen(
 
         when (batteryLevelsUiState) {
             is BatteryLevelsUiState.Success -> {
-                val first: Long
-                val last: Long
+                val first: Double
+                val last: Double
                 Log.d(TAG, "BatteryLevels: $batteryLevelsUiState.batteryLevels")
                 var points: List<PointF> = listOf()
                 try {
@@ -60,23 +61,35 @@ fun BigScreen(
                             it.level != null
                         }
                         .apply {
-                            first = first().time
-                            last = last().time
+                            first = first().time.toDouble()
+                            last = last().time.toDouble()
                         }
                         .map {
-                            val time = (it.time - first) / last
+                            val time = (it.time - first) / (last-first)
                             PointF(time.toFloat(), it.level!!/100f)
                         }
 
                 } catch (e: NoSuchElementException) {
                     Text("No data")
                 }
-                AndroidView(
-                    factory = { context ->
-                        BatteryChartView(context, points)
-                    },
-                    modifier = Modifier.fillMaxSize()
-                )
+                Column {
+                    AndroidView(
+                        factory = { context ->
+                            BatteryChartView(context, points)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    )
+                    Button(
+                        onClick = onClickFunction,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    ) {
+                        Text("Add new ")
+                    }
+                }
 
             }
             is BatteryLevelsUiState.Failure -> {

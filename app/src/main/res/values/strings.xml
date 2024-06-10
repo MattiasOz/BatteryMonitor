@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">BatteryMonitor</string>
     <string name="battery_levels">Battery Levels</string>
+    <string name="list_screen">List screen</string>
 </resources>
