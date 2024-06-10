@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -14,6 +15,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.matzuu.batterymonitor.ui.components.BatteryMonitorBottomBar
 import com.matzuu.batterymonitor.ui.screens.BigScreen
+import com.matzuu.batterymonitor.viewmodels.BatteryMonitorViewModel
 
 enum class CurrentScreen(@StringRes val title: Int) {
     BatteryLevels(title = R.string.battery_levels)
@@ -25,6 +27,8 @@ fun PrimaryScreen(
     navController: NavHostController = rememberNavController(),
     modifier: Modifier = Modifier
 ) {
+    val batteryMonitorViewModel: BatteryMonitorViewModel = viewModel(factory = BatteryMonitorViewModel.Factory)
+
     Scaffold(
         bottomBar = {
             BatteryMonitorBottomBar(
@@ -35,6 +39,9 @@ fun PrimaryScreen(
             )
         }
     ) { innerPadding ->
+
+
+
         NavHost(
             navController = rememberNavController(),
             startDestination = CurrentScreen.BatteryLevels.name,
@@ -43,7 +50,10 @@ fun PrimaryScreen(
                 .fillMaxSize()
         ) {
             composable(route = CurrentScreen.BatteryLevels.name) {
-                BigScreen(batteryManager = batteryManager)
+                BigScreen(
+                    batteryManager = batteryManager,
+                    batteryLevelsUiState = batteryMonitorViewModel.batteryLevelsUiState
+                )
             }
         }
     }
