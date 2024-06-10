@@ -27,25 +27,27 @@ fun BatteryListScreen(
                 modifier = modifier
             ) {
                 var odd = true
-                items(batteryLevelsUiState.batteryLevels) { (time, level) ->
+                items(batteryLevelsUiState.batteryLevels.asReversed()) { (time, level) ->
                     BatteryRow(
                         time,
                         level,
                         modifier = Modifier
-                            .background(if (odd) Color.DarkGray else Color.Gray)
                     )
                     odd = !odd
                 }
             }
         }
-        BatteryLevelsUiState.Failure -> TODO()
+        BatteryLevelsUiState.Failure -> {
+            Text(
+                text = "No data",
+            )
+        }
     }
-
 }
 
 
 @Composable
-fun BatteryRow(
+private fun BatteryRow(
     time: Long,
     batteryLevel: Int?,
     modifier: Modifier = Modifier

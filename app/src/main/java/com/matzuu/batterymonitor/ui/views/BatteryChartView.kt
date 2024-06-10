@@ -7,6 +7,7 @@ import android.graphics.Paint
 import android.graphics.PointF
 import android.util.Log
 import android.view.View
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -97,7 +98,9 @@ fun BatteryChartViewPreview() {
             factory = { context ->
                 BatteryChartView(context, points)
             },
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .background(androidx.compose.ui.graphics.Color(0xFF444444))
         )
     }
 }
