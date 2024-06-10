@@ -16,6 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import com.matzuu.batterymonitor.ui.components.BatteryMonitorBottomBar
 import com.matzuu.batterymonitor.ui.screens.BigScreen
 import com.matzuu.batterymonitor.viewmodels.BatteryMonitorViewModel
+import com.matzuu.batterymonitor.workers.BatteryLevelCollectWorker
 
 enum class CurrentScreen(@StringRes val title: Int) {
     BatteryLevels(title = R.string.battery_levels)
@@ -28,6 +29,10 @@ fun PrimaryScreen(
     modifier: Modifier = Modifier
 ) {
     val batteryMonitorViewModel: BatteryMonitorViewModel = viewModel(factory = BatteryMonitorViewModel.Factory)
+    BatteryLevelCollectWorker.viewmodel = batteryMonitorViewModel
+    BatteryLevelCollectWorker.batteryManager = batteryManager
+    batteryMonitorViewModel.scheduleWorker()
+    batteryMonitorViewModel.getBatteryLevels()
 
     Scaffold(
         bottomBar = {
@@ -39,9 +44,6 @@ fun PrimaryScreen(
             )
         }
     ) { innerPadding ->
-
-
-
         NavHost(
             navController = rememberNavController(),
             startDestination = CurrentScreen.BatteryLevels.name,

@@ -11,7 +11,7 @@ interface BatteryLevelDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)
     fun insert(batteryLevel: BatteryLevel)
 
-    @Query("SELECT * FROM battery_level")
+    @Query("SELECT * FROM battery_level ORDER BY time ASC")
     fun getAll(): List<BatteryLevel>
 
     @Query("DELETE FROM battery_level")

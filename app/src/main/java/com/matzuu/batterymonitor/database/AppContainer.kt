@@ -11,6 +11,5 @@ class DefaultAppContainer(
     private val context: Context
 ) : AppContainer {
     override val batteryLevelRepository: BatteryLevelRepository by lazy {
-        BatteryLevelRepository(BatteryLevelDatabase.getDatabase(context).batteryLevelDao())
-    }
+        BatteryLevelRepositoryImpl(context, BatteryLevelDatabase.getDatabase(context).batteryLevelDao())    }
 }

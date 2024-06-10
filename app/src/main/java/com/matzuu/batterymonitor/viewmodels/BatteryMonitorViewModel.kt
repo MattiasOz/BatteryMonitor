@@ -13,7 +13,9 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.matzuu.batterymonitor.BatteryMonitorApplication
 import com.matzuu.batterymonitor.database.BatteryLevelRepository
 import com.matzuu.batterymonitor.models.BatteryLevel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 sealed interface BatteryLevelsUiState {
     data class Success(val batteryLevels: List<BatteryLevel>): BatteryLevelsUiState
@@ -27,10 +29,27 @@ class BatteryMonitorViewModel(
     var batteryLevelsUiState: BatteryLevelsUiState by mutableStateOf(BatteryLevelsUiState.Failure)
         private set
 
+    fun insertBatteryLevel(currentLevel: Int) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                batteryLevelRepository.insertBatteryLevel(currentLevel)
+            }
+        }
+    }
+
+    fun scheduleWorker() {
+        viewModelScope.launch {
+            batteryLevelRepository.enqueueWorker()
+        }
+    }
+
     fun getBatteryLevels() {
         viewModelScope.launch {
             batteryLevelsUiState = BatteryLevelsUiState.Failure
-            val batteryLevels = batteryLevelRepository.getBatteryLevel()
+            lateinit var batteryLevels: List<BatteryLevel>
+            withContext(Dispatchers.IO) {
+                batteryLevels = batteryLevelRepository.getBatteryLevel()
+            }
             batteryLevelsUiState = BatteryLevelsUiState.Success(batteryLevels)
         }
     }
