@@ -40,10 +40,18 @@ fun PrimaryScreen(
             BatteryMonitorBottomBar(
                 currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route,
                 navigationStandard = {
-                    navController.navigate(CurrentScreen.BatteryLevels.name)
+                    navController.navigate(CurrentScreen.BatteryLevels.name) {
+                        popUpTo(CurrentScreen.BatteryLevels.name) {
+                            inclusive = true
+                        }
+                    }
                 },
                 navigateList = {
-                    navController.navigate(CurrentScreen.ListScreen.name)
+                    navController.navigate(CurrentScreen.ListScreen.name) {
+                        popUpTo(CurrentScreen.ListScreen.name) {
+                            inclusive = true
+                        }
+                    }
                 },
                 modifier = Modifier
             )
